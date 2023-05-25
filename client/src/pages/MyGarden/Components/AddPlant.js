@@ -1,44 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Grid, Header, Segment } from "semantic-ui-react";
+import { Button, Form, Grid, Header, Segment, Progress } from "semantic-ui-react";
 import { ADD_PLANT } from "../../../utils/mutations";
 import { useMutation } from "@apollo/client";
 import SizeChartModal from "./SizeChartModal";
 import {
-  ImageContainer,
-  RecordSummary,
   SummaryContainer,
+  RecommendationText,
 } from "../StyledElements/AddPlantElement";
-
+import SummaryComponent from "./Summary";
 export default function AddPlantForm({ closeForm, closeAndUpdate }) {
-  const [addPlant, { error, data }] = useMutation(ADD_PLANT);
+  const [addPlant] = useMutation(ADD_PLANT);
   const initialState = {
     name: "",
     nickname: "",
     plantType: "",
     plantSize: "",
     waterNeeded: 15,
-    hasImage: false
-  }
-    const [plantState, setPlantState] = useState(initialState);
+    hasImage: false,
+  };
+  const [plantState, setPlantState] = useState(initialState);
   const [plantRecommendations, setPlantRecommendations] = useState(null);
-
+  const [recommendationFailedMessage, setRecommendationFailedMessage] = useState("")
   useEffect(() => {
-    // Your function logic here
     if (plantRecommendations === null) {
-      return; // Exit out of the useEffect hook
+      return; 
     }
-    console.log("plant recommendations are here!")
-    console.log(plantRecommendations)
-    console.log(plantRecommendations.minWater)
-    let neededWater = (Math.floor(plantRecommendations?.minWater * 10));
-    console.log(neededWater)
+    let neededWater = Math.floor(plantRecommendations?.minWater * 10);
     setPlantState((prevState) => ({
       ...prevState,
       name: plantRecommendations.plant_name,
       waterNeeded: neededWater || 15,
-      hasImage: true
+      hasImage: true,
     }));
-  }, [plantRecommendations]); // Specify the dependency as [value]
+  }, [plantRecommendations]);
 
   const handleUpload = async (file) => {
     try {
@@ -48,37 +42,34 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
         method: "POST",
         body: formData,
       });
-
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setPlantRecommendations({
-          plant_name: data.suggestions[0].plant_details?.scientific_name,
-          minWater: data.suggestions[0].plant_details.watering?.max,
-          maxWater: data.suggestions[0].plant_details.watering?.min,
-          probability: (data.suggestions[0].probability * 100).toFixed(2),
-          description:
-            data.suggestions[0].plant_details.wiki_description?.value.split(
-              "."
-            )[0],
-          link: data.suggestions[0].plant_details?.url,
-          image: data.suggestions[0].plant_details.wiki_image?.value,
-        });
-        
-
-        // Handle the response or perform additional actions
+        console.log(data)
+        return
+        if(data?.suggestions?.length){
+          setPlantRecommendations({
+            plant_name: data.suggestions[0].plant_details?.scientific_name,
+            minWater: data.suggestions[0].plant_details.watering?.max,
+            maxWater: data.suggestions[0].plant_details.watering?.min,
+            probability: (data.suggestions[0].probability * 100).toFixed(2),
+            description:
+              data.suggestions[0].plant_details.wiki_description?.value.split(
+                "."
+              )[0],
+            link: data.suggestions[0].plant_details?.url,
+            image: data?.images[0]?.url,
+            wiki_image: data.suggestions[0].plant_details.wiki_image?.value,
+          });
+        } else{
+          setRecommendationFailedMessage("Image Added, but couldn't process your image. This could be due to image quality issues, or having multiple plants in the image")
+        }
       } else {
         alert("Error uploading file:", response.statusText);
-        // Handle the error
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert(error)
-      // Handle the error
     }
   };
-  console.log(plantRecommendations);
-
   const [sizeModalViewable, setSizeModalViewable] = useState(false);
   const onClose = () => setSizeModalViewable(false);
   const onOpen = () => setSizeModalViewable(true);
@@ -99,33 +90,33 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
       return;
     }
     const { innerText } = event.target;
+    //Prevent bug on dropdown whwere it takes tabs as arguement
     setPlantState({
       ...plantState,
-      [dropdownName]: innerText,
+      [dropdownName]: innerText.split("\n")[0],
     });
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("DDING A PLANT")
-      console.log(plantState)
+      console.log("DDING A PLANT");
+      console.log(plantState);
       const { data } = await addPlant({
         variables: {
           ...plantState,
         },
       });
-      console.log(data)
-      handleSuccessfulAdd()
+      handleSuccessfulAdd();
     } catch (e) {
       console.log(e);
     }
   };
-  const handleSuccessfulAdd  = () => {
-    setPlantRecommendations(null)
-    setPlantState(initialState)
+  const handleSuccessfulAdd = () => {
+    setPlantRecommendations(null);
+    setPlantState(initialState);
     closeAndUpdate();
-  }
+  };
 
   return (
     <>
@@ -142,44 +133,44 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
             Cancel
           </Button>
 
-          <SummaryContainer>
             {!plantRecommendations ? (
-              <>
+              <SummaryContainer style={{marginTop: "5%", flexDirection: "column"}}>
+                  <RecommendationText>
+                    New Feature!: Upload A Picture of Your Plant and Get Plant Details
+                  </RecommendationText>
+                  <br></br>
                 <input
                   type="file"
                   onChange={(e) => handleUpload(e.target.files[0])}
-                />
-              </>
-            ) : (
-              <>
-                <ImageContainer>
-                  <p>{plantRecommendations.plant_name}</p>
-                  <img
-                    src={plantRecommendations.image}
-                    alt={plantRecommendations.description}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      borderRadius: '8'
-                    }}
                   />
-                </ImageContainer>
-                <RecordSummary>
-                  <p>
-                    Probability of match: {plantRecommendations.probability}%
-                  </p>
-                  <p>
-                    {plantRecommendations.description}{" "}
-                    {plantRecommendations.probability}%
-                  </p>
-                  <p>{plantRecommendations.link}</p>
-                  {!plantRecommendations?.minWater ? <p>Please visit the Wiki for guidance on water care</p> : plantRecommendations.minWater === 1 ? <p>Your plant doesn't require too much water</p> : plantRecommendations.minWater === 2? <p>Your water required a moderate to high amount of water</p> : <p>Your plant needs a lot water and care, pick carefully!</p>}
-                </RecordSummary>
-              </>
+                                    <br></br>
+                      <Progress
+                  percent={0}
+                  style={{width: '60%'}}
+                > Upload Status
+                </Progress>
+                  </SummaryContainer>
+            ) : (              <>
+              <Progress
+                  percent={100}
+                  autoSuccess
+                  style={{width: '60%',
+                marginLeft: "20%"}}
+                > Upload Complete!
+                </Progress>
+                {recommendationFailedMessage 
+                ? 
+                <RecommendationText>{recommendationFailedMessage}</RecommendationText>
+                : <><SummaryComponent plantRecommendations={plantRecommendations}/>
+                </>
+              }
+</>
             )}
-          </SummaryContainer>
-          <Form size="large" onSubmit={handleFormSubmit}>
+          <Form
+            size="large"
+            onSubmit={handleFormSubmit}
+            style={{ marginTop: "5%" }}
+          >
             <Segment stacked>
               <Form.Field>
                 <Form.Input
