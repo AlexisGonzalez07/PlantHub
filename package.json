@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "env": "^0.0.2",
-    "node-cron": "^3.0.2"
+    "env": "^0.0.2"
   }
 }
