@@ -90,6 +90,6 @@ const LoginModal = ({ handleSignUpModal, handleLoginModal }) => {
       </Grid.Column>
     </Grid>
   );
-}
+};
 
-export default LoginModal
+export default LoginModal;

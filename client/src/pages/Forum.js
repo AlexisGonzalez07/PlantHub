@@ -15,6 +15,12 @@ const Forum = () => {
       setAllPost(data.allPosts);
     }
   }, [data]);
+  
+  if(loading){
+    return (
+      <h1>Loading...</h1>
+    )
+  }
 
   return (
     <main style={{ margin: "40px", padding: "0em 0em 5em"}}>
