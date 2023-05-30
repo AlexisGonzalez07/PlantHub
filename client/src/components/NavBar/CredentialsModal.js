@@ -1,5 +1,6 @@
 import React, { useState, useImperativeHandle } from "react";
 import { Modal, Backdrop } from "@mui/material";
+import { Button } from "semantic-ui-react";
 
 const CredentialModal = React.forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
@@ -26,7 +27,10 @@ const CredentialModal = React.forwardRef((props, ref) => {
       ref={ref}
       BackdropComponent={Backdrop}
     >
-      <div>{props.children}</div>
+      <div style={{position: "relative", display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: "red"}}>
+      <Button style={{position: 'absolute', left: '48vw', bottom: props.login? 0 : '-10vh'}} color='red' onClick={closeModal}>
+          Cancel
+        </Button>{props.children}</div>
     </Modal>
   );
 });

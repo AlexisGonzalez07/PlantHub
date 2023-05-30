@@ -23,6 +23,8 @@ const SignUpForm = (props) => {
     password: "",
   });
 
+  
+
   const [addUser] = useMutation(ADD_USER);
 
   // handles change for input
@@ -48,9 +50,10 @@ const handleFormSubmit = async (event) => {
 
   return ( <Grid
       textAlign="center"
-      style={{ height: "10vh", paddingTop: "150px" }}
+      style={{ height: "10vh", paddingTop: "150px", position: 'absolute' }}
       verticalAlign="middle"
     >
+      
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="teal" textAlign="center">
           <Image src="./images/favicon.ico" /> Sign Up

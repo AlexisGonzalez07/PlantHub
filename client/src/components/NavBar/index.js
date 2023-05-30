@@ -23,7 +23,7 @@ import SignUpForm from "./SignUpForm";
 const Nav = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false)
+  const modalOpen = false
   const modalRef = useRef(null)
   const [login, setLogin] = useState(true);
   const logout = () => {
@@ -36,7 +36,7 @@ const Nav = () => {
   }
   const handleModalClose = () =>{
     console.log(modalRef)
-    modalRef.current?.closeModal()
+    modalRef.current?.closeModal ? modalRef.current.closeModal() : console.log("nothing")
   }
   const settings = getSettings(handleModalOpen, logout);
   const pages = ["MyGarden", "Forum", "PlantFacts"];
@@ -193,6 +193,7 @@ const Nav = () => {
         open={modalOpen}
         handleModalClose={handleModalClose}
         ref={modalRef}
+        login={login}
       >
           {login ? (
         <LoginForm login={login} setLogin={setLogin} />
