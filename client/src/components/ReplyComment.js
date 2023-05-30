@@ -5,7 +5,7 @@ const ReplyComment = (props) => {
   const [replyBox, setReplyBox] = useState(false);
   const replyButton = async (e) => {
     e.preventDefault();
-    setReplyBox(true);
+    setReplyBox(!replyBox);
   };
 
   return (

@@ -8,8 +8,7 @@
     "start": "cd server && npm run start",
     "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm run start\"",
     "install": "cd server && npm i && cd ../client && npm i",
-    "seed": "cd server && npm run seed",
-    "build": "cd client && npm run build"
+    "seed": "cd server && npm run seed"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +18,6 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "env": "^0.0.2",
-    "node-cron": "^3.0.2"
+    "env": "^0.0.2"
   }
 }

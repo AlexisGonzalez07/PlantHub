@@ -7,20 +7,18 @@ import Auth from "../utils/auth";
 const ReplyModal = (props) => {
   const [open, setOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
-  const [addComment, { error }] = useMutation(ADD_COMMENT);
+  const [addComment] = useMutation(ADD_COMMENT);
 
   const handleReplySubmit = async (event) => {
     event.preventDefault();
-
     try {
-      const { data } = await addComment({
+      await addComment({
         variables: {
           postId: props.postId,
           commentText: commentText,
           commentAuthor: Auth.getProfile().data.username,
         },
       });
-
       setCommentText("");
       setOpen(false);
     } catch (err) {
@@ -30,7 +28,6 @@ const ReplyModal = (props) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     if (name === "commentText") {
       setCommentText(value);
     }
@@ -42,7 +39,10 @@ const ReplyModal = (props) => {
       onOpen={() => setOpen(true)}
       open={open}
       size="tiny"
-      trigger={<a>Reply</a>}
+      trigger={<Button as="a" onClick={() => setOpen(true)}>
+      Reply
+    </Button>
+}
     >
       <Header icon>
         <Icon name="reply" />

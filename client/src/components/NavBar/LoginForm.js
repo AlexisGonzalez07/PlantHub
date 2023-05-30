@@ -12,10 +12,9 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_USER } from "../../utils/mutations";
 import Auth from "../../utils/auth";
 
-const LoginModal = ({ handleSignUpModal, handleLoginModal }) => {
+const LoginForm = (props) => {
   const [formState, setFormState] = useState({ email: "", password: "" });
   const [login] = useMutation(LOGIN_USER);
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormState({
@@ -30,7 +29,6 @@ const LoginModal = ({ handleSignUpModal, handleLoginModal }) => {
       const { data } = await login({
         variables: { ...formState },
       });
-
       Auth.login(data.login.token);
     } catch (e) {
       console.error(e);
@@ -40,7 +38,7 @@ const LoginModal = ({ handleSignUpModal, handleLoginModal }) => {
       password: "",
     });
   };
-  return (
+  return (  
     <Grid
       textAlign="center"
       style={{ height: "10vh", paddingTop: "200px" }}
@@ -78,18 +76,13 @@ const LoginModal = ({ handleSignUpModal, handleLoginModal }) => {
         </Form>
         <Message>
           New to us?{" "}
-          <Button
-            onClick={() => {
-              handleLoginModal();
-              handleSignUpModal();
-            }}
-          >
+          <Button onClick={()=> props.setLogin(!props.login)}>
             Sign Up
           </Button>
         </Message>
       </Grid.Column>
     </Grid>
   );
-}
+};
 
-export default LoginModal
+export default LoginForm;

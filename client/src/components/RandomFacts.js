@@ -33,7 +33,7 @@ export default function RandomFacts(props) {
             }}
             type="submit"
           >
-            <i class="fab fa-twitter"></i> Share Fact
+            <i className="fab fa-twitter"></i> Share Fact
           </Button>
         </div>
       </div>

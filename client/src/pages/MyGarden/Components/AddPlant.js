@@ -44,7 +44,6 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data)
         if(data?.suggestions?.length){
           setPlantRecommendations({
             plant_name: data.suggestions[0].plant_details?.scientific_name,
@@ -99,9 +98,7 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("DDING A PLANT");
-      console.log(plantState);
-      const { data } = await addPlant({
+      await addPlant({
         variables: {
           ...plantState,
         },

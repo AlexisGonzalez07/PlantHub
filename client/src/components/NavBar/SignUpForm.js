@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import {
   Button,
   Form,
@@ -13,7 +13,7 @@ import { ADD_USER } from "../../utils/mutations";
 import { useMutation } from "@apollo/client";
 import Auth from "../../utils/auth";
 
-const SignUpModal = ({ handleSignUpModal, handleLoginModal }) => {
+const SignUpForm = (props) => {
   const [formState, setFormState] = useState({
     firstName: "",
     lastName: "",
@@ -22,40 +22,38 @@ const SignUpModal = ({ handleSignUpModal, handleLoginModal }) => {
     email: "",
     password: "",
   });
-  console.log(formState);
+
+  
 
   const [addUser] = useMutation(ADD_USER);
 
   // handles change for input
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormState({
       ...formState,
       [name]: value,
     });
   };
 
-  const handleFormSubmit = async (event) => {
+const handleFormSubmit = async (event) => {
     event.preventDefault();
     try {
       const { data } = await addUser({
         variables: { ...formState },
       });
-
       Auth.login(data.addUser.token);
-      handleSignUpModal()
     } catch (e) {
       console.error(e);
     }
   };
 
-  return (
-    <Grid
+  return ( <Grid
       textAlign="center"
-      style={{ height: "10vh", paddingTop: "150px" }}
+      style={{ height: "10vh", paddingTop: "150px", position: 'absolute' }}
       verticalAlign="middle"
     >
+      
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="teal" textAlign="center">
           <Image src="./images/favicon.ico" /> Sign Up
@@ -145,12 +143,7 @@ const SignUpModal = ({ handleSignUpModal, handleLoginModal }) => {
    
         <Message>
           Already a Member?{" "}
-          <Button
-            onClick={() => {
-              handleLoginModal();
-              handleSignUpModal();
-            }}
-          >
+          <Button onClick={()=> props.setLogin(!props.login)}>
             Login
           </Button>
         </Message>
@@ -159,4 +152,4 @@ const SignUpModal = ({ handleSignUpModal, handleLoginModal }) => {
   );
 }
 
-export default SignUpModal
+export default SignUpForm
