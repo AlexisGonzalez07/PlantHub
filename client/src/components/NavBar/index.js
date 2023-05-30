@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import getSettings from "./settings";
 import Auth from "../../utils/auth";
@@ -17,27 +17,34 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import profilePic from "../../pages/assets/profilepic.jpeg";
-import { Modal } from "@mui/material";
-import LoginModal from "./LoginModal";
-import SignUpModal from "./SignupModal";
+import CredentialModal from "./CredentialsModal"
+import LoginForm from "./LoginForm";
+import SignUpForm from "./SignUpForm";
 const Nav = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [loginToggle, setLoginToggle] = useState(false);
-  const [signUpToggle, setSignUpToggle] = useState(false);
-  const handleLoginModal = () => setLoginToggle(!loginToggle);
-  const handleSignUpModal = () => setSignUpToggle(!signUpToggle);
+  const [modalOpen, setModalOpen] = useState(false)
+  const modalRef = useRef(null)
+  const [login, setLogin] = useState(true);
   const logout = () => {
     Auth.logout();
     document.location.replace("/");
   };
-  const settings = getSettings(handleSignUpModal, handleLoginModal, logout);
+  const handleModalOpen = () => {
+    console.log(modalRef)
+    modalRef.current?.openModal()
+  }
+  const handleModalClose = () =>{
+    console.log(modalRef)
+    modalRef.current?.closeModal()
+  }
+  const settings = getSettings(handleModalOpen, logout);
   const pages = ["MyGarden", "Forum", "PlantFacts"];
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
   const handleCloseNavMenu = () => setAnchorElNav(null);
-
   const handleCloseUserMenu = () => setAnchorElUser(null);
+
   return (
     <>
       <AppBar position="static" style={{ background: "#4F5902" }}>
@@ -182,28 +189,17 @@ const Nav = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      <Modal
-        open={loginToggle}
-        onClose={handleLoginModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+      <CredentialModal
+        open={modalOpen}
+        handleModalClose={handleModalClose}
+        ref={modalRef}
       >
-        <LoginModal
-          handleLoginModal={handleLoginModal}
-          handleSignUpModal={handleSignUpModal}
-        />
-      </Modal>
-      <Modal
-        open={signUpToggle}
-        onClose={handleSignUpModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <SignUpModal
-          handleLoginModal={handleLoginModal}
-          handleSignUpModal={handleSignUpModal}
-        />
-      </Modal>
+          {login ? (
+        <LoginForm login={login} setLogin={setLogin} />
+      ) : (
+        <SignUpForm login={login} setLogin={setLogin} />
+      )}
+      </CredentialModal>
     </>
   );
 };

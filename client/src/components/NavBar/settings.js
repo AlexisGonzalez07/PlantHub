@@ -1,17 +1,13 @@
 import Auth from "../../utils/auth";
 
-const getSettings = (handleSignUpModal, handleLoginModal, logout) => {
+const getSettings = (handleModalOpen, logout) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
     if (!token) {
       return [
         {
-            name:'SignUp',
-            callback: handleSignUpModal,
-        },
-        {
-            name:'Login',
-            callback: handleLoginModal,
-        },
+            name:'SignUp/Login',
+            callback: handleModalOpen,
+        }
     ];
     } 
     return [
