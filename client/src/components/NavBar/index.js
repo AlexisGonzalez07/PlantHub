@@ -31,12 +31,10 @@ const Nav = () => {
     document.location.replace("/");
   };
   const handleModalOpen = () => {
-    console.log(modalRef)
     modalRef.current?.openModal()
   }
   const handleModalClose = () =>{
-    console.log(modalRef)
-    modalRef.current?.closeModal ? modalRef.current.closeModal() : console.log("nothing")
+    modalRef.current?.closeModal && modalRef.current.closeModal() 
   }
   const settings = getSettings(handleModalOpen, logout);
   const pages = ["MyGarden", "Forum", "PlantFacts"];

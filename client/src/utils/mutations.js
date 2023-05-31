@@ -47,6 +47,7 @@ export const ADD_PLANT = gql`
     $plantSize: String!
     $waterNeeded: Int!
     $hasImage: Boolean!
+    $imageLink: String
   ) {
     addPlant(
       name: $name
@@ -55,6 +56,7 @@ export const ADD_PLANT = gql`
       plantSize: $plantSize
       waterNeeded: $waterNeeded
       hasImage: $hasImage
+      imageLink: $imageLink
     ) {
       _id
       name

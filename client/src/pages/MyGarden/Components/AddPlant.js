@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Grid, Header, Segment, Progress } from "semantic-ui-react";
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Segment,
+  Progress,
+} from "semantic-ui-react";
 import { ADD_PLANT } from "../../../utils/mutations";
 import { useMutation } from "@apollo/client";
 import SizeChartModal from "./SizeChartModal";
@@ -8,7 +15,7 @@ import {
   RecommendationText,
 } from "../StyledElements/AddPlantElement";
 import SummaryComponent from "./Summary";
-
+import axios from "axios";
 export default function AddPlantForm({ closeForm, closeAndUpdate }) {
   const [addPlant] = useMutation(ADD_PLANT);
   const initialState = {
@@ -21,10 +28,11 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
   };
   const [plantState, setPlantState] = useState(initialState);
   const [plantRecommendations, setPlantRecommendations] = useState(null);
-  const [recommendationFailedMessage, setRecommendationFailedMessage] = useState("")
+  const [recommendationFailedMessage, setRecommendationFailedMessage] =
+    useState("");
   useEffect(() => {
     if (plantRecommendations === null) {
-      return; 
+      return;
     }
     let neededWater = Math.floor(plantRecommendations?.minWater * 10);
     setPlantState((prevState) => ({
@@ -32,43 +40,79 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
       name: plantRecommendations.plant_name,
       waterNeeded: neededWater || 15,
       hasImage: true,
+      imageLink: plantRecommendations.image || plantRecommendations.wiki_image || ""
     }));
   }, [plantRecommendations]);
 
-  const handleUpload = async (file) => {
+  const processFileData = async (fileData) => {
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const response = await fetch(`https://plant-hub-refactor.vercel.app/api/upload`, {
-        method: "POST",
-        body: formData,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if(data?.suggestions?.length){
-          setPlantRecommendations({
-            plant_name: data.suggestions[0].plant_details?.scientific_name,
-            minWater: data.suggestions[ 0].plant_details.watering?.max,
-            maxWater: data.suggestions[0].plant_details.watering?.min,
-            probability: (data.suggestions[0].probability * 100).toFixed(2),
-            description:
-              data.suggestions[0].plant_details.wiki_description?.value.split(
-                "."
-              )[0],
-            link: data.suggestions[0].plant_details?.url,
-            image: data?.images[0]?.url,
-            wiki_image: data.suggestions[0].plant_details.wiki_image?.value,
-          });
-        } else{
-          setRecommendationFailedMessage("Image Added, but couldn't process your image. This could be due to image quality issues, or having multiple plants in the image")
+      const response = await axios.post(
+        `${process.env.REACT_APP_PLANT_API_URL}`,
+        {
+          api_key: `${process.env.REACT_APP_API_KEY}`,
+          images: [fileData],
+          plant_details: [
+            "common_names",
+            "name_authority",
+            "watering",
+            "wiki_image",
+            "wiki_description",
+            "url",
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
+      if (response.status !== 200) {
+        setRecommendationFailedMessage("Couldn't upload your image!");
+      }
+      const { data } = response;
+      if (data?.suggestions?.length) {
+        setPlantRecommendations({
+          plant_name: data.suggestions[0].plant_details?.scientific_name,
+          minWater: data.suggestions[0].plant_details.watering?.max,
+          maxWater: data.suggestions[0].plant_details.watering?.min,
+          probability: (data.suggestions[0].probability * 100).toFixed(2),
+          description:
+            data.suggestions[0].plant_details.wiki_description?.value.split(
+              "."
+            )[0],
+          link: data.suggestions[0].plant_details?.url,
+          image: data?.images[0]?.url,
+          wiki_image: data.suggestions[0].plant_details.wiki_image?.value,
+        });
       } else {
-        alert("Error uploading file:", response.statusText);
+        setRecommendationFailedMessage(
+          "Image Added, but couldn't process your image. This could be due to image quality issues, or having multiple plants in the image"
+        );
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      alert("Error uploading file :", error);
     }
   };
+
+  const handleUpload = (file) => {
+    try {
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      const allowedExtensions = ["jpeg", "jpg", "png"];
+      if (!allowedExtensions.includes(fileExtension)) {
+        alert("Only JPEG, JPG, and PNG files are allowed");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target.result.split("base64,")[1];
+        processFileData(imageData);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      alert("Error uploading file: ", error);
+    }
+  };
+
   const [sizeModalViewable, setSizeModalViewable] = useState(false);
   const onClose = () => setSizeModalViewable(false);
   const onOpen = () => setSizeModalViewable(true);
@@ -130,39 +174,48 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
             Cancel
           </Button>
 
-            {!plantRecommendations ? (
-              <SummaryContainer style={{marginTop: "5%", flexDirection: "column"}}>
-                  <RecommendationText>
-                    New Feature!: Upload A Picture of Your Plant and Get Plant Details
-                  </RecommendationText>
-                  <br></br>
-                <input
-                  type="file"
-                  onChange={(e) => handleUpload(e.target.files[0])}
-                  />
-                                    <br></br>
-                      <Progress
-                  percent={0}
-                  style={{width: '60%'}}
-                > Upload Status
-                </Progress>
-                  </SummaryContainer>
-            ) : (              <>
+          {!plantRecommendations ? (
+            <SummaryContainer
+              style={{ marginTop: "5%", flexDirection: "column" }}
+            >
+              <RecommendationText>
+                New Feature!: Upload A Picture of Your Plant and Get Plant
+                Details
+              </RecommendationText>
+              <br></br>
+              <input
+                type="file"
+                onChange={(e) => handleUpload(e.target.files[0])}
+              />
+              <br></br>
+              <Progress percent={0} style={{ width: "60%" }}>
+                {" "}
+                Upload Status
+              </Progress>
+            </SummaryContainer>
+          ) : (
+            <>
               <Progress
-                  percent={100}
-                  autoSuccess
-                  style={{width: '60%',
-                marginLeft: "20%"}}
-                > Upload Complete!
-                </Progress>
-                {recommendationFailedMessage 
-                ? 
-                <RecommendationText>{recommendationFailedMessage}</RecommendationText>
-                : <><SummaryComponent plantRecommendations={plantRecommendations}/>
+                percent={100}
+                autoSuccess
+                style={{ width: "60%", marginLeft: "20%" }}
+              >
+                {" "}
+                Upload Complete!
+              </Progress>
+              {recommendationFailedMessage ? (
+                <RecommendationText>
+                  {recommendationFailedMessage}
+                </RecommendationText>
+              ) : (
+                <>
+                  <SummaryComponent
+                    plantRecommendations={plantRecommendations}
+                  />
                 </>
-              }
-</>
-            )}
+              )}
+            </>
+          )}
           <Form
             size="large"
             onSubmit={handleFormSubmit}

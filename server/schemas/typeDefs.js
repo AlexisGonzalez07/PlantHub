@@ -73,6 +73,7 @@ const typeDefs = gql`
       plantSize: String!
       waterNeeded: Int!
       hasImage: Boolean!
+      imageLink: String
     ): Plant
     addWater(plantId: ID!): Plant
     removePlant(plantId: ID!): Plant
