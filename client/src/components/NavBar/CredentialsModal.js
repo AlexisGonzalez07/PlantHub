@@ -27,7 +27,7 @@ const CredentialModal = React.forwardRef((props, ref) => {
       ref={ref}
       BackdropComponent={Backdrop}
     >
-      <div style={{position: "relative", display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: "red"}}>
+      <div style={{position: "relative", display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       <Button style={{position: 'absolute', left: '48vw', bottom: props.login? 0 : '-10vh'}} color='red' onClick={closeModal}>
           Cancel
         </Button>{props.children}</div>

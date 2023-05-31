@@ -8,6 +8,7 @@ import {
   RecommendationText,
 } from "../StyledElements/AddPlantElement";
 import SummaryComponent from "./Summary";
+
 export default function AddPlantForm({ closeForm, closeAndUpdate }) {
   const [addPlant] = useMutation(ADD_PLANT);
   const initialState = {
@@ -38,7 +39,7 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const response = await fetch("/api/upload", {
+      const response = await fetch(`https://plant-hub-refactor.vercel.app/api/upload`, {
         method: "POST",
         body: formData,
       });
@@ -47,7 +48,7 @@ export default function AddPlantForm({ closeForm, closeAndUpdate }) {
         if(data?.suggestions?.length){
           setPlantRecommendations({
             plant_name: data.suggestions[0].plant_details?.scientific_name,
-            minWater: data.suggestions[0].plant_details.watering?.max,
+            minWater: data.suggestions[ 0].plant_details.watering?.max,
             maxWater: data.suggestions[0].plant_details.watering?.min,
             probability: (data.suggestions[0].probability * 100).toFixed(2),
             description:
