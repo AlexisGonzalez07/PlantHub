@@ -10,6 +10,7 @@ const multer = require("multer");
 const cron = require('node-cron')
 const cors = require('cors');
 const { storage,fileFilter, getImageString } = require("./utils/multer");
+const fs = require('fs');
 require('dotenv').config();
 
 
@@ -50,6 +51,7 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
+  console.log(req.file)
   const filePath = path.join(__dirname, "/uploads", req.file.filename);
   console.log(filePath)
   var image = await getImageString(filePath);
@@ -91,6 +93,11 @@ db.once("open", () => {
         console.error('Error resetting water needed:', error);
       }
     });
+
+const directory = 'uploads';
+if (!fs.existsSync(directory)) {
+  fs.mkdirSync(directory);
+}
     app.listen(PORT, () => {
       console.log(`API server running on port ${PORT}!`);
       console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
