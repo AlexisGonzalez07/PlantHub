@@ -50,7 +50,7 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
-  const filePath = path.join(__dirname, "uploads", req.file.filename);
+  const filePath = path.join(__dirname, "/uploads", req.file.filename);
   console.log(filePath)
   var image = await getImageString(filePath);
   try {
