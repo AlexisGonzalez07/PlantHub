@@ -5,12 +5,16 @@ const { typeDefs, resolvers } = require("./schemas");
 const { authMiddleware } = require("./utils/auth");
 const db = require("./config/connection");
 const PORT = process.env.PORT || 3001;
-const app = express();
 const axios = require("axios");
 const multer = require("multer");
 const cron = require('node-cron')
+const cors = require('cors');
 const { storage,fileFilter, getImageString } = require("./utils/multer");
 require('dotenv').config();
+
+
+const app = express();
+app.use(cors());
 const upload = multer({ storage, fileFilter });
 
 // Serve up static assets

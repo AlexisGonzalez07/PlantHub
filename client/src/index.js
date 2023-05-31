@@ -10,7 +10,7 @@ import {
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: `${process.env.SERVER_URL}/graphql`,
+  uri: `https://plant-hub-refactor.vercel.app/graphql`,
 });
 
 const authLink = setContext((_, { headers }) => {
