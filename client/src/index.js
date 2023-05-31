@@ -10,7 +10,7 @@ import {
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: `https://plant-hub-refactor.vercel.app/graphql`,
+  uri: `${process.env.REACT_APP_SERVER_URL}/graphql`,
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -28,7 +28,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-console.log(client)
+
 
 ReactDOM.render(
   <ApolloProvider client={client}>

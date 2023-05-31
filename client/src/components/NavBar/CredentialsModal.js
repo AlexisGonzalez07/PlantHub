@@ -4,8 +4,6 @@ import { Button } from "semantic-ui-react";
 
 const CredentialModal = React.forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
-  console.log(ref)
-
   const openModal = () => {
     setOpen(true);
   };

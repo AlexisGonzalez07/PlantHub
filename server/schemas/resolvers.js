@@ -1,10 +1,9 @@
 const { AuthenticationError } = require("apollo-server-express");
 const { User, Plant, Blog } = require("../models");
 const { signToken } = require("../utils/auth");
-const path = require("path");
-const fs = require("fs");
 const AWS = require("aws-sdk");
 const { uuid } = require("uuidv4");
+const axios = require("axios")
 require("dotenv").config();
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -27,9 +26,12 @@ const uploadImageToS3 = (params) => {
   });
 };
 
-const uploadImage = async (filePath, fileExtension) => {
-  const fileContent = fs.readFileSync(filePath);
+const uploadImage = async (imageLink) => {
+  const response = await axios.get(imageLink, { responseType: 'arraybuffer' });  
+  console.log(response)
+  const fileContent = response.data
   const fileName = uuid();
+  const fileExtension = imageLink.split(".")[imageLink.split(".").length -1]
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: `${process.env.AWS_BUCKET_FOLDER}/${fileName}${fileExtension}`,
@@ -126,33 +128,24 @@ const resolvers = {
     },
     addPlant: async (
       _,
-      { name, nickname, plantType, plantSize, waterNeeded, hasImage },
+      { name, nickname, plantType, plantSize, waterNeeded, hasImage, imageLink },
       context
     ) => {
-      var plant;
-      console.log("adding a plant!!!!");
       if (context.user) {
         try {
+          var plant;
+          console.log(hasImage)
+          console.log(imageLink)
           if (hasImage) {
-            const uploadsFolder = path.join(__dirname, "../uploads");
-            // Read the files in the uploads folder
-            const files = fs.readdirSync(uploadsFolder);
-            console.log(files);
-            if (files.length > 0) {
-              // Get the first file
-              const firstFile = files[0];
-              const imagePath = `${uploadsFolder}/${firstFile}`;
-              const fileExtension = path.extname(firstFile).toLowerCase();
-              const imageLink = await uploadImage(imagePath, fileExtension);
+              const savedImage = await uploadImage(imageLink);
               plant = await Plant.create({
                 name: name,
                 nickname: nickname,
                 plantType: plantType,
                 plantSize: plantSize,
                 waterNeeded: waterNeeded,
-                image: imageLink,
+                image: savedImage,
               });
-            }
           } else {
             plant = await Plant.create({
               name: name,
