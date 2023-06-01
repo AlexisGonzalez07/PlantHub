@@ -9,6 +9,7 @@ const axios = require("axios");
 // const multer = require("multer");
 const cron = require("node-cron");
 const cors = require("cors");
+const {Plant} = require("./models")
 // const { storage, fileFilter, getImageString } = require("./utils/multer");
 const fs = require("fs");
 require("dotenv").config();
