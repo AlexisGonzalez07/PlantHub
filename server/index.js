@@ -55,8 +55,10 @@ app.get("/api/plantReset", async (req, res) => {
     //Reset the waterAdded field to 0 for all plants at midnight of each month
     await Plant.updateMany({}, { $set: { waterAdded: 0 } });
     console.log("Water needed reset completed.");
+    res.json({ message: "Water needed reset completed." });
   } catch (error) {
     console.error("Error resetting water needed:", error);
+    res.status(500).json({ error: "An error occurred while resetting water needed." });
   }
 });
 
