@@ -31,7 +31,7 @@ app.get("*", (req, res) => {
 server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: authMiddleware
+  context: authMiddleware,
   // uploads: {
   //   maxFileSize: 10000000, // Set the maximum file size (in bytes) here as needed
   // },
@@ -43,16 +43,22 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 
-app.get("/api/plantReset", async (req,res) => {
+app.get("/api/plantReset", async (req, res) => {
+  // Check if the current date is the first day of the month
+  var today = new Date();
+  if (today.getDate() !== 1) {
+    console.log("CRON JOB WILL ONLY RUN IN THE FIRST OF THE MONTH");
+    res.json({ message: "Cron job will run on the 1st." });
+    return;
+  }
   try {
-       //Reset the waterAdded field to 0 for all plants at midnight of each month
-      await Plant.updateMany({}, { $set: { waterAdded: 0 } });
-      console.log("Water needed reset completed.");
-    } catch (error) {
-      console.error("Error resetting water needed:", error);
-    }
-})
-
+    //Reset the waterAdded field to 0 for all plants at midnight of each month
+    await Plant.updateMany({}, { $set: { waterAdded: 0 } });
+    console.log("Water needed reset completed.");
+  } catch (error) {
+    console.error("Error resetting water needed:", error);
+  }
+});
 
 db.once("open", () => {
   try {
