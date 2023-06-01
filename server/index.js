@@ -43,59 +43,19 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 
-// app.post("/api/upload", upload.single("image"), async (req, res) => {
-//   if (!req.file) {
-//     return res.status(400).json({ error: "No file uploaded" });
-//   }
-//   console.log(req.file);
-//   const filePath = path.join(__dirname, "/uploads", req.file.filename);
-//   console.log(filePath);
-//   var image = await getImageString(filePath);
-//   console.log(image)
-//   return
-//   try {
-//     var apiKey = process.env.PLANT_ID_API_KEY;
-//     console.log(apiKey);
-//     const response = await axios.post(
-//       "https://api.plant.id/v2/identify",
-//       {
-//         api_key: apiKey,
-//         images: [image],
-//         plant_details: [
-//           "common_names",
-//           "name_authority",
-//           "watering",
-//           "wiki_image",
-//           "wiki_description",
-//           "url",
-//         ],
-//       },
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     res.json(response.data);
-//   } catch (error) {
-//     console.log(error);
-//     res.json(error);
-//   }
-// });
+app.get("/api/plantReset", async (req,res) => {
+  try {
+       //Reset the waterAdded field to 0 for all plants at midnight of each month
+      await Plant.updateMany({}, { $set: { waterAdded: 0 } });
+      console.log("Water needed reset completed.");
+    } catch (error) {
+      console.error("Error resetting water needed:", error);
+    }
+})
+
 
 db.once("open", () => {
   try {
-    //Reset the waterAdded field to 0 for all plants at midnight of each month
-    cron.schedule("0 0 1 * *", async () => {
-      try {
-        // Update the waterAdded field to 0 for all plants
-        await Plant.updateMany({}, { $set: { waterAdded: 0 } });
-
-        console.log("Water needed reset completed.");
-      } catch (error) {
-        console.error("Error resetting water needed:", error);
-      }
-    });
     app.listen(PORT, () => {
       console.log(`API server running on port ${PORT}!`);
       console.log(
