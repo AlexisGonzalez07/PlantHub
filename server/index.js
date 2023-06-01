@@ -43,6 +43,7 @@ server = new ApolloServer({
   
   app.get("/api/reset", async (req, res) => {
     // Check if the current date is the first day of the month
+    console.log("RESETTING!")
     var today = new Date();
     if (today.getDate() !== 1) {
       console.log("CRON JOB WILL ONLY RUN IN THE FIRST OF THE MONTH");
