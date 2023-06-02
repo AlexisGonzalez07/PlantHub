@@ -38,17 +38,14 @@ const LoginForm = (props) => {
       password: "",
     });
   };
+
+
   return (  
-    <Grid
-      textAlign="center"
-      style={{ height: "10vh", paddingTop: "200px" }}
-      verticalAlign="middle"
-    >
-      <Grid.Column style={{ maxWidth: 450 }}>
+      <Grid.Column >
         <Header as="h2" color="teal" textAlign="center">
-          <Image src="./images/favicon.ico" /> Log-in to your account
+          <Image src="./images/favicon.ico" /> Welcome Back!
         </Header>
-        <Form size="large">
+        <Form size="large" style={{backgroundColor: 'yellow'}}>
           <Segment stacked>
             <Form.Input
               fluid
@@ -81,7 +78,6 @@ const LoginForm = (props) => {
           </Button>
         </Message>
       </Grid.Column>
-    </Grid>
   );
 };
 

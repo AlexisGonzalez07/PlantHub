@@ -48,13 +48,8 @@ const handleFormSubmit = async (event) => {
     }
   };
 
-  return ( <Grid
-      textAlign="center"
-      style={{ height: "10vh", paddingTop: "150px", position: 'absolute' }}
-      verticalAlign="middle"
-    >
-      
-      <Grid.Column style={{ maxWidth: 450 }}>
+  return (       
+      <Grid.Column >
         <Header as="h2" color="teal" textAlign="center">
           <Image src="./images/favicon.ico" /> Sign Up
         </Header>
@@ -148,7 +143,6 @@ const handleFormSubmit = async (event) => {
           </Button>
         </Message>
       </Grid.Column>
-    </Grid>
   );
 }
 

@@ -1,9 +1,18 @@
-import React, { useState, useImperativeHandle } from "react";
-import { Modal, Backdrop } from "@mui/material";
+import React, { useState, useImperativeHandle, useEffect } from "react";
+import { Modal } from "@mui/material";
 import { Button } from "semantic-ui-react";
+import FormContainer from "./FormContainer";
+import Auth from "../../utils/auth";
 
 const CredentialModal = React.forwardRef((props, ref) => {
+
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    Auth.loggedIn() ? setOpen(false) : setOpen(true);
+  }, []);
+
+
   const openModal = () => {
     setOpen(true);
   };
@@ -16,6 +25,7 @@ const CredentialModal = React.forwardRef((props, ref) => {
     openModal,
     closeModal,
   }));
+
   return (
     <Modal
       open={open}
@@ -23,12 +33,31 @@ const CredentialModal = React.forwardRef((props, ref) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       ref={ref}
-      BackdropComponent={Backdrop}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onClick={closeModal}
     >
-      <div style={{position: "relative", display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      <Button style={{position: 'absolute', left: '48vw', bottom: props.login? 0 : '-10vh'}} color='red' onClick={closeModal}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundColor: "white",
+          padding: '2%',
+          height: "auto",
+          borderRadius: '1%'
+        }}  
+        onClick={(e) => e.stopPropagation()}
+        >
+        <FormContainer />
+        <Button style={{ marginTop: '5%' }} color="red" onClick={closeModal}>
           Cancel
-        </Button>{props.children}</div>
+        </Button>
+      </div>
     </Modal>
   );
 });
