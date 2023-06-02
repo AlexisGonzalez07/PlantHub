@@ -17,25 +17,22 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import profilePic from "../../pages/assets/profilepic.jpeg";
-import CredentialModal from "./CredentialsModal"
-import LoginForm from "./LoginForm";
-import SignUpForm from "./SignUpForm";
+import CredentialModal from "./CredentialsModal";
+
 const Nav = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const modalOpen = false
-  const modalRef = useRef(null)
-  const [login, setLogin] = useState(true);
+  const modalRef = useRef(null);
   const logout = () => {
     Auth.logout();
     document.location.replace("/");
   };
   const handleModalOpen = () => {
-    modalRef.current?.openModal()
-  }
-  const handleModalClose = () =>{
-    modalRef.current?.closeModal && modalRef.current.closeModal() 
-  }
+    modalRef.current?.openModal();
+  };
+  const handleModalClose = () => {
+    modalRef.current?.closeModal && modalRef.current.closeModal();
+  };
   const settings = getSettings(handleModalOpen, logout);
   const pages = ["MyGarden", "Forum", "PlantFacts"];
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
@@ -188,17 +185,10 @@ const Nav = () => {
         </Container>
       </AppBar>
       <CredentialModal
-        open={modalOpen}
+        // open={modalOpen}
         handleModalClose={handleModalClose}
         ref={modalRef}
-        login={login}
-      >
-          {login ? (
-        <LoginForm login={login} setLogin={setLogin} />
-      ) : (
-        <SignUpForm login={login} setLogin={setLogin} />
-      )}
-      </CredentialModal>
+      />
     </>
   );
 };
