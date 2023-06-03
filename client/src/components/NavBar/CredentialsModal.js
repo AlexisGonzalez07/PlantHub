@@ -9,7 +9,9 @@ const CredentialModal = React.forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    Auth.loggedIn() ? setOpen(false) : setOpen(true);
+    if(!Auth.loggedIn() && (window.location.pathname === "/" || window.location.pathname === "/MyGarden")){
+      setOpen(true)
+    }
   }, []);
 
 
